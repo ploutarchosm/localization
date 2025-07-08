@@ -62,6 +62,7 @@ export class LocalizationModule implements NestModule, OnModuleInit {
         GetNsLocaleService,
         LanguageService,
         TranslationService,
+        TranslationLocaleMiddleware,
       ],
       exports: ['LOCALIZATION_CONFIG'],
     };
