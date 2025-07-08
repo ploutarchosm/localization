@@ -52,7 +52,7 @@ export class LocalizationModule implements NestModule, OnModuleInit {
           useFactory: (configService: ConfigService) => {
             // Validate configuration at module initialization
             this.config = validateLocalizationConfig({
-              deeplApi: configService.get<string>('DEEPL_API'),
+              apiKey: configService.get<string>('DEEPL_API'),
             });
 
             return this.config;
