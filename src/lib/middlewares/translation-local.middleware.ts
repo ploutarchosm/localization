@@ -1,20 +1,22 @@
-import { Injectable, Logger, NestMiddleware } from '@nestjs/common';
+import { Inject, Injectable, Logger, NestMiddleware } from '@nestjs/common';
 import { NextFunction, Request, Response } from 'express';
 import { getErrorMessage, getErrorStack } from '@ploutos/common';
 import { NS_LOCALE } from '../constants/ng-locale';
 import * as clsHooked from 'cls-hooked';
-import { ConfigService } from '@nestjs/config';
+import { AppConfigDto } from '@ploutos/application';
 
 @Injectable()
 export class TranslationLocaleMiddleware implements NestMiddleware {
   private readonly logger = new Logger(TranslationLocaleMiddleware.name);
 
-  constructor(private config: ConfigService) {}
+  constructor(
+      @Inject('APP_CONFIG') private readonly appConfig: AppConfigDto,
+  ) {}
 
   use(req: Request, res: Response, next: NextFunction): void {
     try {
       const clsNamespace = clsHooked.getNamespace(
-        this.config.get<string>('APP_NAMESPACE'),
+        this.appConfig.namespace,
       );
 
       clsNamespace.run(() => {
