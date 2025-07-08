@@ -18,6 +18,7 @@ import {
 } from '@ploutos/common';
 import { TranslationService } from '../services/translation.service';
 import { CreateTranslationDTO } from '../dto/translation.dto';
+import * as deepl from 'deepl-node';
 
 @ApiTags('Translations')
 @ApiSecurity(SECURITY_API_TOKEN_HEADER_KEY)
