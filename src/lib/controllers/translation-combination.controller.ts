@@ -17,7 +17,7 @@ import {
   TRANSLATOR,
 } from '@ploutos/common';
 import { TranslationService } from '../services/translation.service';
-import { TranslationSingleRequestParamsModel } from '../dto/translation.dto';
+import {TranslationSingleRequestParamsModel, TranslationUpdateDto} from '../dto/translation.dto';
 
 @ApiTags('Translations')
 @ApiSecurity(SECURITY_API_TOKEN_HEADER_KEY)
@@ -42,12 +42,12 @@ export class TranslationCombinationController {
   async update(
     @Query(new ValidationPipe({ transform: true }))
     params: TranslationSingleRequestParamsModel,
-    @Body() model: { [key: string]: string },
+    @Body() body: TranslationUpdateDto,
   ) {
     return this.translationService.updateCombination(
       params.group,
       params.key,
-      model,
+      body.translations,
     );
   }
 

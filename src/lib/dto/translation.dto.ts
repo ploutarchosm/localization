@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import {
-  IsDefined,
+  IsDefined, IsObject,
   IsOptional,
   IsString,
   Matches,
@@ -54,4 +54,21 @@ export class TranslationSingleRequestParamsModel {
   @IsString()
   @IsOptional()
   key: string;
+}
+
+
+export class TranslationUpdateDto {
+  @ApiProperty({
+    description: 'Translation values for different languages',
+    example: {
+      'en': 'Hello',
+      'es': 'Hola',
+      'fr': 'Bonjour'
+    },
+    additionalProperties: {
+      type: 'string'
+    }
+  })
+  @IsObject()
+  translations: { [key: string]: string };
 }
