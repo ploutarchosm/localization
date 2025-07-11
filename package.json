@@ -1,6 +1,6 @@
 {
   "name": "@ploutos/localization",
-  "version": "1.0.5",
+  "version": "1.0.6",
   "description": "A localization module API for languages and translations of a system.",
   "author": "Ploutarchos Michaelides",
   "license": "MIT",
