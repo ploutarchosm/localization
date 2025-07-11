@@ -14,7 +14,7 @@ import {
   PermissionsGuard,
   SECURITY_API_TOKEN_HEADER_KEY,
   TRANSLATOR,
-  IListQuery,
+  CListQuery,
 } from '@ploutos/common';
 import { TranslationService } from '../services/translation.service';
 import { CreateTranslationDTO } from '../dto/translation.dto';
@@ -60,7 +60,7 @@ export class TranslationController {
         },
       }),
     )
-    params: IListQuery,
+    params: CListQuery,
   ) {
     const [translations, count] = await this.translationService.list(
       params.take,

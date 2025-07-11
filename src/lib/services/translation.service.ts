@@ -1,6 +1,6 @@
 import { BadRequestException, Injectable, Logger } from '@nestjs/common';
-import { InjectConnection, InjectModel } from '@nestjs/mongoose';
-import { Connection, Model } from 'mongoose';
+import { InjectModel } from '@nestjs/mongoose';
+import { Model } from 'mongoose';
 import { GetNsLocaleService } from './get-ns-locale.service';
 import { Language } from '../schemas/language.schema';
 import { Translation } from '../schemas/translation.schema';
@@ -19,8 +19,6 @@ export class TranslationService {
     private translationModel: Model<Translation>,
     @InjectModel(Language.name)
     private languageModel: Model<Language>,
-    @InjectConnection()
-    private connection: Connection,
     private getNsLocaleService: GetNsLocaleService,
     private config: ConfigService
   ) {}
@@ -247,53 +245,24 @@ export class TranslationService {
    * @param translations
    */
   async updateCombination(
-    group: string,
-    key: string,
-    translations: { [key: string]: string },
-  ): Promise<void> {
-    if (!group || !key) {
-      throw new BadRequestException('Group and key are required');
-    }
-
-    if (!translations || Object.keys(translations).length === 0) {
-      throw new BadRequestException('Translations object cannot be empty');
-    }
-
-    const session = await this.connection.startSession();
-
-    try {
-      await session.withTransaction(async () => {
-        // Delete all existing translations for this group/key combination
-        await this.translationModel
-          .deleteMany({
-            group,
-            key,
-          })
-          .session(session);
-
-        // Prepare bulk operations for new translations
-        const bulkOps = Object.entries(translations)
-          .filter(([_, value]) => !isEmpty(value))
-          .map(([language, value]) => ({
-            insertOne: {
-              document: {
-                group,
-                key,
-                language,
-                value,
-              },
-            },
-          }));
-
-        if (bulkOps.length > 0) {
-          await this.translationModel.bulkWrite(bulkOps, { session });
-        }
+      group: string,
+      key: string,
+      translations: { [key: string]: string },
+  ) {
+    for (const [k, v] of Object.entries(translations)) {
+      await this.translationModel.deleteOne({
+        group: group,
+        key: key,
+        language: k,
       });
-    } catch (error) {
-      this.logger.error('Error in updateCombination:', error);
-      throw new BadRequestException('Failed to update translation combination');
-    } finally {
-      await session.endSession();
+      if (!isEmpty(v)) {
+        await new this.translationModel({
+          group: group,
+          key: key,
+          language: k,
+          value: v,
+        }).save();
+      }
     }
   }
 
@@ -353,7 +322,7 @@ export class TranslationService {
 
       const translatedData = {
         ...data,
-        language: toLanguage.toString(),
+        language: toLanguage.toString().slice(0, 2),
         value: result.text,
       };
 

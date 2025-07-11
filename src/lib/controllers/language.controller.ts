@@ -17,7 +17,7 @@ import { ApiOperation, ApiQuery, ApiSecurity, ApiTags } from '@nestjs/swagger';
 import {
   ADMIN,
   AuthorizedGuard,
-  CleanObjectIdPipe,
+  CleanObjectIdPipe, CListQuery,
   PermissionsGuard,
   SECURITY_API_TOKEN_HEADER_KEY,
   ValidateEmptyObjectPipe,
@@ -113,31 +113,24 @@ export class LanguageController {
 
   /**
    * @description Get system supported language.
-   * @param take
-   * @param skip
-   * @param search
+   * @param params
    */
   @Get()
   @ApiOperation({ summary: 'Get supported language.' })
   @ApiQuery({ name: 'search', required: false, type: String })
   @Permissions(ADMIN)
   async list(
-    @Query(
-      'take',
-      new DefaultValuePipe(10),
-      ParseIntPipe,
-      ValidatePaginationPipe,
-    )
-    take: number,
-    @Query(
-      'skip',
-      new DefaultValuePipe(0),
-      ParseIntPipe,
-      ValidatePaginationPipe,
-    )
-    skip: number,
-    @Query('search') search: string,
+      @Query(
+          new ValidationPipe({
+            transform: true,
+            transformOptions: {
+              enableImplicitConversion: true,
+            },
+          }),
+      )
+      params: CListQuery,
   ) {
+    const { skip, take, search } = params;
     return this.languageService.list(skip, take, search);
   }
 }
